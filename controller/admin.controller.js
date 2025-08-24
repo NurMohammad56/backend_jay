@@ -16,8 +16,14 @@ export const getUsers = catchAsync(async (req, res) => {
 
 export const deleteUser = catchAsync(async (req, res) => {
   const { id } = req.params;
+
+  if (!id) {
+    throw new AppError("User ID is required", 400);
+  }
+
   await User.findByIdAndDelete(id);
-  await Report.deleteMany({ userId: id });
+  await Report.deleteMany({ user: id });
+
   sendResponse(res, {
     statusCode: 200,
     success: true,

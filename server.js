@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import router from "./mainroute/index.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import webhookRoutes from "./route/stripe.webhook.route.js";
 
 import globalErrorHandler from "./middleware/globalErrorHandler.js";
 import notFound from "./middleware/notFound.js";
@@ -14,9 +13,6 @@ import notFound from "./middleware/notFound.js";
 const app = express();
 
 app.set("trust proxy", true);
-
-// ********* Must be BEFORE app.use(express.json********************
-app.use("/api/stripe", webhookRoutes);
 
 const server = createServer(app);
 export const io = new Server(server, {
@@ -47,19 +43,23 @@ app.use("/api/v1", router);
 app.get("/", (req, res) => {
   res.send("Server is running...!!");
 });
+
 app.use(globalErrorHandler);
 app.use(notFound);
 
-// WebSocket connection
 io.on("connection", (socket) => {
   console.log("A client connected:", socket.id);
 
-  // Join user-specific room for notifications
   socket.on("joinChatRoom", (userId) => {
     if (userId) {
       socket.join(`chat_${userId}`);
       console.log(`Client ${socket.id} joined user room: ${userId}`);
     }
+  });
+
+  socket.on("joinAlerts", () => {
+    socket.join("alerts");
+    console.log(`Client ${socket.id} joined alerts room`);
   });
 
   socket.on("disconnect", () => {

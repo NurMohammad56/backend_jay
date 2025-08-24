@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
 
-const reportSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+const alertSchema = new mongoose.Schema({
+  report: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Report",
+    required: true,
+  },
   type: {
     type: String,
     enum: ["Fire", "ICE", "Police", "Ambulance"],
@@ -14,11 +18,10 @@ const reportSchema = new mongoose.Schema({
       coordinates: { type: [Number], required: true },
     },
   },
-  title: { type: String, required: true },
-  description: { type: String },
   createdAt: { type: Date, default: Date.now },
+  isRead: { type: Boolean, default: false },
 });
 
-reportSchema.index({ "location.coordinates": "2dsphere" });
+alertSchema.index({ "location.coordinates": "2dsphere" });
 
-export const Report = mongoose.model("Report", reportSchema);
+export const Alert = mongoose.model("Alert", alertSchema);
