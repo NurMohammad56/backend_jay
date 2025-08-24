@@ -31,10 +31,7 @@ const userSchema = new Schema(
     lastPost: { type: Date },
     totalPosts: { type: Number, default: 0 },
     address: {
-      street: { type: String, default: "" },
-      city: { type: String, default: "" },
-      state: { type: String, default: "" },
-      zipCode: { type: String, default: "" },
+      type: String,
     },
     verificationInfo: {
       verified: { type: Boolean, default: false },

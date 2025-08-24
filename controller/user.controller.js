@@ -39,10 +39,9 @@ export const updateProfile = catchAsync(async (req, res) => {
   if (dob) user.dob = dob;
 
   if (req.file) {
-    user.avatar = {
-      public_id: req.file.filename,
-      url: `/public/temp/${req.file.filename}`,
-    };
+    const result = await uploadOnCloudinary(req.file.path);
+    user.avatar.public_id = result.public_id;
+    user.avatar.url = result.secure_url;
   }
 
   await user.save();

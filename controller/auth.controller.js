@@ -8,7 +8,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 import { User } from "./../model/user.model.js";
 
 export const register = catchAsync(async (req, res) => {
-  const { name, email, phone, password, confirmPassword } = req.body;
+  const { name, email, phone, address, password, confirmPassword } = req.body;
 
   if (!email || !password) {
     throw new AppError(httpStatus.FORBIDDEN, "Please fill in all fields");
@@ -27,27 +27,14 @@ export const register = catchAsync(async (req, res) => {
       "Email already exists, please try another email"
     );
 
-  // const otp = generateOTP();
-  // const jwtPayloadOTP = {
-  //   otp: otp,
-  // };
-
-  // const otptoken = createToken(
-  //   jwtPayloadOTP,
-  //   process.env.OTP_SECRET,
-  //   process.env.OTP_EXPIRE
-  // );
-
   const user = await User.create({
     name,
     email,
     password,
     phone,
+    address,
     verificationInfo: { token: "", verified: true },
   });
-
-  // await sendEmail(user.email, "Registerd Account", `Your OTP is ${otp}`);
-  // create token and sent to the client
 
   const jwtPayload = {
     _id: user._id,
@@ -86,7 +73,6 @@ export const login = catchAsync(async (req, res) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
-  // console.log(await User.isPasswordMatched(password.toString(), user.password))
   if (
     user?.password &&
     !(await User.isPasswordMatched(password, user.password))
