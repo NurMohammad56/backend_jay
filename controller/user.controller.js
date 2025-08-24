@@ -4,7 +4,6 @@ import { uploadOnCloudinary } from "../utils/commonMethod.js";
 import AppError from "../errors/AppError.js";
 import sendResponse from "../utils/sendResponse.js";
 import catchAsync from "../utils/catchAsync.js";
-import catchAsync from "./../utils/catchAsync";
 
 // Get user profile
 export const getProfile = catchAsync(async (req, res) => {
@@ -40,10 +39,9 @@ export const updateProfile = catchAsync(async (req, res) => {
   if (dob) user.dob = dob;
 
   if (req.file) {
-    user.avatar = {
-      public_id: req.file.filename,
-      url: `/public/temp/${req.file.filename}`,
-    };
+    const result = await uploadOnCloudinary(req.file.path);
+    user.avatar.public_id = result.public_id;
+    user.avatar.url = result.secure_url;
   }
 
   await user.save();
