@@ -12,15 +12,18 @@ export const createReport = catchAsync(async (req, res) => {
 
   if (
     !location ||
-    !location.coordinates ||
-    !Array.isArray(location.coordinates.coordinates) ||
-    location.coordinates.coordinates.length !== 2
+    location.type !== "Point" ||
+    !Array.isArray(location.coordinates) ||
+    location.coordinates.length !== 2
   ) {
-    throw new AppError("Location coordinates are required", 400);
+    throw new AppError(
+      "Location must have type=Point and [lng, lat] coordinates",
+      400
+    );
   }
 
   const report = new Report({
-    userId,
+    user: userId,
     title,
     type,
     location,
@@ -69,7 +72,7 @@ export const getReportCoordinates = catchAsync(async (req, res) => {
     .lean();
 
   const coordinatesData = reports.map((report) => ({
-    coordinates: report.location.coordinates.coordinates,
+    coordinates: report.location.coordinates,
     type: report.type,
     timestamp: report.createdAt,
   }));

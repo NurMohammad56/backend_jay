@@ -27,7 +27,9 @@ export const updateProfile = catchAsync(async (req, res) => {
   const { name, phone, gender, dob } = req.body;
 
   // Find user
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id).select(
+    "-password -refreshToken -verificationInfo -password_reset_token"
+  );
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -38,8 +40,10 @@ export const updateProfile = catchAsync(async (req, res) => {
   if (gender) user.gender = gender;
   if (dob) user.dob = dob;
 
+  console.log(req.file);
+
   if (req.file) {
-    const result = await uploadOnCloudinary(req.file.path);
+    const result = await uploadOnCloudinary(req.file.buffer);
     user.avatar.public_id = result.public_id;
     user.avatar.url = result.secure_url;
   }

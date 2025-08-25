@@ -5,12 +5,37 @@ import catchAsync from "../utils/catchAsync.js";
 import AppError from "../errors/AppError.js";
 
 export const getUsers = catchAsync(async (req, res) => {
-  const users = await User.find().select("-__v");
-  sendResponse(res, {
+  let { page = 1, limit = 10 } = req.query;
+
+  page = parseInt(page);
+  limit = parseInt(limit);
+
+  const skip = (page - 1) * limit;
+
+  const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
+
+  const users = await User.find({ role: { $ne: "admin" } })
+    .select("-__v -password -refreshToken")
+    .skip(skip)
+    .limit(limit);
+
+  const totalPages = Math.ceil(totalUsers / limit);
+
+  return sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "Users retrieved successfully",
-    data: users,
+    data: {
+      users,
+      pagination: {
+        totalUsers,
+        totalPages,
+        currentPage: page,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    },
   });
 });
 
