@@ -207,9 +207,6 @@ export const verifyEmail = catchAsync(async (req, res) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
-  if (user.verificationInfo.verified) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User already verified");
-  }
   if (otp) {
     const savedOTP = verifyToken(
       user.verificationInfo.token,
@@ -217,7 +214,6 @@ export const verifyEmail = catchAsync(async (req, res) => {
     );
     console.log(savedOTP);
     if (otp === savedOTP.otp) {
-      user.verificationInfo.verified = true;
       user.verificationInfo.token = "";
       await user.save();
 

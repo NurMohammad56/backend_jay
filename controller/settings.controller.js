@@ -13,7 +13,8 @@ export const getSettings = catchAsync(async (req, res) => {
     throw new AppError("User not found", 404);
   }
 
-  return sendResponse(res, 200, {
+  return sendResponse(res, {
+    statusCode: 200,
     success: true,
     message: "User settings retrieved successfully",
     data: user,
@@ -35,7 +36,8 @@ export const updateSettings = catchAsync(async (req, res) => {
     throw new AppError("User not found", 404);
   }
 
-  return sendResponse(res, 200, {
+  return sendResponse(res, {
+    statusCode: 200,
     success: true,
     message: "User settings updated successfully",
     data: updatedUser,
