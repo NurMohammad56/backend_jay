@@ -8,6 +8,7 @@ import {
   register,
   resetPassword,
   verifyEmail,
+  verifyOTP,
 } from "../controller/auth.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 
@@ -17,6 +18,7 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/verify", verifyEmail);
 router.post("/forget", forgetPassword);
+router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);
 router.post("/change-password", protect, changePassword);
 router.post("/refresh-token", refreshToken);
